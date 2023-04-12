@@ -8,7 +8,7 @@
  - Check if the word will fit and if the points that the word will take up are still in the array (actually it should be a map indexed by (x,y) values)
  - If not just goto the next element in the list
  - If the point is used, remove each point from the list - or mark it used
- - A used point can contain the acutal letter, that way letters can be reused for words that have the same letter
+ - A used point can contain the actual letter, that way letters can be reused for words that have the same letter
 
  point = {
     x,
