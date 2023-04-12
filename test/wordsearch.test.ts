@@ -1,5 +1,5 @@
 import { assert, describe, expect, test } from "vitest";
-import { Point, checkDirectionUp, createGrid, findPoint, shufflePoints } from "../src/main";
+import { Point, checkDirectionUp, createGrid, findPoint, placeWord, shufflePoints } from "../src/main";
 
 describe("Test the wordsearch creator", () => {
     test("The grid should be created with the correct size", () => {
@@ -65,4 +65,25 @@ describe("Test the wordsearch creator", () => {
         p.occupied = "h"; // first letter will already be set to h
         expect(checkDirectionUp(grid, word, x, y)).toBeTruthy();
     });
-})
+
+    test("Placing a word in the up direction should work", () => {
+        // place the word "hello" starting at position (0,4) which 
+        // will give it exactly enough space to fit going up.
+
+        const grid = createGrid(8);
+        const word = "hello";
+        const x = 0;
+        const y = 4;
+        if (checkDirectionUp(grid, word, x, y)) {
+            placeWord(grid, word, "up");
+        }
+
+        const points = [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0]];
+        let pointIndex = 0;
+        word.split("").forEach(ch => {
+            const [px, py] = points[pointIndex++];
+            const p = findPoint(grid, px, py);
+            expect(p.occupied).toEqual(ch);
+        });
+    });
+});

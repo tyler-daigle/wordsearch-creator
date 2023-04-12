@@ -105,6 +105,20 @@ export function checkDirectionUp(grid: Point[], word: string, x: number, y: numb
 }
 
 export function placeWordUp(grid: Point[], word: string, x: number, y: number): void {
+    // place a word in the up direction - which means that the y coordinate is going 
+    // to be decreasing. X will stay the same
+
+    // There are no checks to see if the position is occupied already - it is assumed that
+    // checkPositionUp() was called and returned true.
+
+    let currY = y;
+
+    for (let i = 0; i < word.length; i++) {
+        const p = findPoint(grid, x, currY);
+        // findPoint() will throw an error if the point doesn't exist (out of bounds)
+        p.occupied = word.charAt(i);
+        currY--;
+    }
     return;
 }
 
