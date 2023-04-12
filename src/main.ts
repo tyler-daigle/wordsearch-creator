@@ -18,7 +18,7 @@
 
 */
 
-type Point = {
+export type Point = {
     x: number;
     y: number;
     occupied: string;
@@ -30,7 +30,7 @@ function createEmptyPoint(x: number, y: number): Point {
 
 
 // assume all the grids are square, so size is the height and width
-function createGrid(size: number): Point[] {
+export function createGrid(size: number): Point[] {
     const points: Point[] = [];
     let y = 0;
     let x = 0;
@@ -47,7 +47,7 @@ function createGrid(size: number): Point[] {
     return points;
 }
 
-function shufflePoints(points: Point[]): Point[] {
+export function shufflePoints(points: Point[]): Point[] {
     let currentLength = points.length;
 
     while (currentLength > 0) {
@@ -60,7 +60,7 @@ function shufflePoints(points: Point[]): Point[] {
     return points;
 }
 
-function findPoint(grid: Point[], x: number, y: number) : Point  {
+export function findPoint(grid: Point[], x: number, y: number) : Point  {
     for(let i = 0; i < grid.length; i++) {
         const currPoint = grid[i];
         if(currPoint.x === x && currPoint.y === y) {
@@ -72,9 +72,9 @@ function findPoint(grid: Point[], x: number, y: number) : Point  {
     // return {x:0, y:0, occupied: ""};
 }
 
-type Direction = "up" | "down" | "left" | "right";
+export type Direction = "up" | "down" | "left" | "right";
 
-function checkDirectionUp(grid: Point[], word: string, x: number, y: number) : boolean {
+export function checkDirectionUp(grid: Point[], word: string, x: number, y: number) : boolean {
     
     // if the word is going up, x is going to stay the same and y will decrease
     let currY = y;
@@ -92,11 +92,11 @@ function checkDirectionUp(grid: Point[], word: string, x: number, y: number) : b
     return true;
 }
 
-function placeWordUp(grid: Point[], word: string, x: number, y: number): void {
+export function placeWordUp(grid: Point[], word: string, x: number, y: number): void {
     return;
 }   
 
-function placeWord(grid: Point[], word: string, direction: Direction): Point[] {
+export function placeWord(grid: Point[], word: string, direction: Direction): Point[] {
 
     let spotFound = false;
     // choose a starting spot, start at the first point
@@ -136,10 +136,10 @@ function placeWord(grid: Point[], word: string, direction: Direction): Point[] {
 }
 
 
-const points = createGrid(20);
-shufflePoints(points);
+// const points = createGrid(20);
+// shufflePoints(points);
 
-console.log(checkDirectionUp(points, "hello", 0, 3));
+// console.log(checkDirectionUp(points, "hello", 0, 3));
 // placeWord(points, "Hello", "up");
 // console.log(points);
 
