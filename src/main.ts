@@ -104,7 +104,7 @@ export function checkDirectionUp(grid: Point[], word: string, x: number, y: numb
     return false;
 }
 
-export function placeWordUp(grid: Point[], word: string, x: number, y: number): void {
+function placeWordUp(grid: Point[], word: string, x: number, y: number): void {
     // place a word in the up direction - which means that the y coordinate is going 
     // to be decreasing. X will stay the same
 
@@ -122,11 +122,16 @@ export function placeWordUp(grid: Point[], word: string, x: number, y: number): 
     return;
 }
 
-export function placeWord(grid: Point[], word: string, direction: Direction): Point[] {
+// placeWord() will insert the word into the grid at a random position in the passed direction
+// it returns a 2 element array for the starting x and y coordinates of where the word was
+// placed in the grid. 
+export function placeWord(grid: Point[], word: string, direction: Direction): [number, number] {
 
     let spotFound = false;
     // choose a starting spot, start at the first point
     let pointIndex = 0;
+    let foundX: number = 0;
+    let foundY: number = 0;
 
     while (!spotFound) {
         if (pointIndex === grid.length) {
@@ -147,6 +152,8 @@ export function placeWord(grid: Point[], word: string, direction: Direction): Po
                 if (checkDirectionUp(grid, word, startingX, startingY)) {
                     spotFound = true;
                     placeWordUp(grid, word, startingX, startingY);
+                    foundX = startingX;
+                    foundY = startingY;
                 } else {
                     pointIndex++; //try next point
                 }
@@ -158,9 +165,27 @@ export function placeWord(grid: Point[], word: string, direction: Direction): Po
                 throw new Error("Direction not implemented yet");
         }
     }
-    return grid;
+    return [foundX, foundY];
 }
 
+function gridToString(grid: Point[], size: number): string {
+
+    let x = 0;
+    let y = 0;
+    let gridString: string[] = [];
+
+    for (let i = 0; i < size * size; i++) {
+        const p = findPoint(grid, x, y);
+        gridString.push(p.occupied === "" ? "+" : p.occupied);
+        x++;
+        if (x === size) {
+            y++;
+            x = 0;
+        }
+    }
+    return gridString.join("");
+
+}
 
 // const points = createGrid(20);
 // shufflePoints(points);

@@ -57,7 +57,7 @@ describe("Test the wordsearch creator", () => {
 
     test("Points with the same letters can share", () => {
         const grid = createGrid(8);
-
+        shufflePoints(grid);
         const word = "hello";
         const x = 0;
         const y = 5; //6 spaces available in the up direction
@@ -71,19 +71,18 @@ describe("Test the wordsearch creator", () => {
         // will give it exactly enough space to fit going up.
 
         const grid = createGrid(8);
+        shufflePoints(grid);
         const word = "hello";
         const x = 0;
         const y = 4;
         if (checkDirectionUp(grid, word, x, y)) {
-            placeWord(grid, word, "up");
-        }
+            let [foundX, foundY] = placeWord(grid, word, "up");
 
-        const points = [[0, 4], [0, 3], [0, 2], [0, 1], [0, 0]];
-        let pointIndex = 0;
-        word.split("").forEach(ch => {
-            const [px, py] = points[pointIndex++];
-            const p = findPoint(grid, px, py);
-            expect(p.occupied).toEqual(ch);
-        });
+            word.split("").forEach(ch => {
+                const p = findPoint(grid, foundX, foundY--);
+                expect(p.occupied).toEqual(ch);
+
+            });
+        }
     });
 });
