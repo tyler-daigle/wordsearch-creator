@@ -60,10 +60,10 @@ export function shufflePoints(points: Point[]): Point[] {
     return points;
 }
 
-export function findPoint(grid: Point[], x: number, y: number) : Point  {
-    for(let i = 0; i < grid.length; i++) {
+export function findPoint(grid: Point[], x: number, y: number): Point {
+    for (let i = 0; i < grid.length; i++) {
         const currPoint = grid[i];
-        if(currPoint.x === x && currPoint.y === y) {
+        if (currPoint.x === x && currPoint.y === y) {
             return currPoint;
         }
     }
@@ -74,27 +74,39 @@ export function findPoint(grid: Point[], x: number, y: number) : Point  {
 
 export type Direction = "up" | "down" | "left" | "right";
 
-export function checkDirectionUp(grid: Point[], word: string, x: number, y: number) : boolean {
-    
+export function checkDirectionUp(grid: Point[], word: string, x: number, y: number): boolean {
+
     // if the word is going up, x is going to stay the same and y will decrease
     let currY = y;
+    let charCount = 0;
+    const sharingOk = true; // changing this will cause tests to fail
 
-    while(currY >= 0) {
+    while (currY >= 0) {
         const p = findPoint(grid, x, currY);
-        if(p.occupied) {
+
+        // letters can be shared between words
+        if (p.occupied && p.occupied !== word[charCount]) {
             return false;
         }
+
+        // no sharing
+        if (p.occupied && !sharingOk) {
+            return false;
+        }
+
         currY--;
+        charCount++; // keep track of num of chars that will fit
+        if (charCount === word.length) {
+            return true;
+        }
     }
-    if(currY < 0) {
-        return false;
-    }
-    return true;
+
+    return false;
 }
 
 export function placeWordUp(grid: Point[], word: string, x: number, y: number): void {
     return;
-}   
+}
 
 export function placeWord(grid: Point[], word: string, direction: Direction): Point[] {
 
@@ -118,7 +130,7 @@ export function placeWord(grid: Point[], word: string, direction: Direction): Po
 
         switch (direction) {
             case "up":
-                if(checkDirectionUp(grid, word, startingX, startingY)) {
+                if (checkDirectionUp(grid, word, startingX, startingY)) {
                     spotFound = true;
                     placeWordUp(grid, word, startingX, startingY);
                 } else {
