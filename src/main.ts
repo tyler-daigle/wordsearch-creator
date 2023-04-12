@@ -168,7 +168,7 @@ export function placeWord(grid: Point[], word: string, direction: Direction): [n
     return [foundX, foundY];
 }
 
-function gridToString(grid: Point[], size: number): string {
+export function gridToString(grid: Point[], size: number): string {
 
     let x = 0;
     let y = 0;
@@ -181,6 +181,7 @@ function gridToString(grid: Point[], size: number): string {
         if (x === size) {
             y++;
             x = 0;
+            gridString.push("\n");
         }
     }
     return gridString.join("");
