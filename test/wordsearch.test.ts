@@ -1,5 +1,5 @@
 import { assert, describe, expect, test } from "vitest";
-import { Point, checkDirectionUp, createGrid, findPoint, placeWord, shufflePoints } from "../src/main";
+import { Point, checkDirectionDown, checkDirectionUp, createGrid, findPoint, placeWord, shufflePoints } from "../src/main";
 
 describe("Test the wordsearch creator", () => {
     test("The grid should be created with the correct size", () => {
@@ -82,6 +82,43 @@ describe("Test the wordsearch creator", () => {
                 const p = findPoint(grid, foundX, foundY--);
                 expect(p.occupied).toEqual(ch);
 
+            });
+        }
+    });
+
+    test("Fitting a word going down should work", () => {
+        const grid = createGrid(8);
+        shufflePoints(grid);
+        const word = "hello";
+        const x = 0;
+        const y = 0;
+        expect(checkDirectionDown(grid, word, x, y)).toBeTruthy();
+    });
+
+    test("Trying to fit a word going down where it won't fit should fail", () => {
+        const grid = createGrid(8);
+        shufflePoints(grid);
+        const word = "hello";
+        const x = 0;
+        const y = 7; // bottom of the grid
+        expect(checkDirectionDown(grid, word, x, y)).toBeFalsy();
+    });
+
+    test("Placing a word in the down direction should work", () => {
+        // place the word "hello" starting at position (0,0) 
+        // the string will be going down
+
+        const grid = createGrid(8);
+        shufflePoints(grid);
+        const word = "hello";
+        const x = 0;
+        const y = 0;
+        if (checkDirectionDown(grid, word, x, y)) {
+            let [foundX, foundY] = placeWord(grid, word, "down");
+            
+            word.split("").forEach(ch => {
+                const p = findPoint(grid, foundX, foundY++);
+                expect(p.occupied).toEqual(ch);
             });
         }
     });

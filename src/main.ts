@@ -10,6 +10,10 @@
  - If the point is used, remove each point from the list - or mark it used
  - A used point can contain the actual letter, that way letters can be reused for words that have the same letter
 
+
+ TODO: Can optimize by having a separate array that holds the starting points, each time a 
+       point is used just remove it from the array.
+
  point = {
     x,
     y,
@@ -17,6 +21,8 @@
  }
 
 */
+
+export type Direction = "up" | "down" | "left" | "right";
 
 export type Point = {
     x: number;
@@ -72,7 +78,13 @@ export function findPoint(grid: Point[], x: number, y: number): Point {
     // return {x:0, y:0, occupied: ""};
 }
 
-export type Direction = "up" | "down" | "left" | "right";
+export function checkDirectionDown(grid: Point[], word: string, x: number, y: number): boolean {
+    // going down, x will stay the same and the y value will increase
+    // just calculate the ending y position and reverse the string and use the up functions
+    let startingY = y + word.length - 1;
+    const reversedWord = word.split("").reverse().join("");
+    return checkDirectionUp(grid, reversedWord, x, startingY);
+}
 
 export function checkDirectionUp(grid: Point[], word: string, x: number, y: number): boolean {
 
@@ -82,29 +94,45 @@ export function checkDirectionUp(grid: Point[], word: string, x: number, y: numb
     const sharingOk = true; // changing this will cause tests to fail
 
     while (currY >= 0) {
-        const p = findPoint(grid, x, currY);
+        try {
 
-        // letters can be shared between words
-        if (p.occupied && p.occupied !== word[charCount]) {
+            const p = findPoint(grid, x, currY);
+            
+            // letters can be shared between words
+            if (p.occupied && p.occupied !== word[charCount]) {
+                return false;
+            }
+            
+            // no sharing
+            if (p.occupied && !sharingOk) {
+                return false;
+            }
+            
+            currY--;
+            charCount++; // keep track of num of chars that will fit
+            if (charCount === word.length) {
+                return true;
+            }
+        }catch(e) {
+            // point wasn't found
+            // have to catch here because there is no check for going out of bounds
+            // of the grid other than at the top - 
+            // TODO: Change the grid to be an object that has a height and width to make 
+            // checking easier.
             return false;
         }
 
-        // no sharing
-        if (p.occupied && !sharingOk) {
-            return false;
-        }
-
-        currY--;
-        charCount++; // keep track of num of chars that will fit
-        if (charCount === word.length) {
-            return true;
-        }
     }
 
     return false;
 }
+export function placeWordDown(grid: Point[], word: string, x: number, y: number): void {
+    const reversedWord = word.split("").reverse().join("");
+    const startingY = y + word.length - 1;
+    return placeWordUp(grid, reversedWord, x, startingY);
+}
 
-function placeWordUp(grid: Point[], word: string, x: number, y: number): void {
+export function placeWordUp(grid: Point[], word: string, x: number, y: number): void {
     // place a word in the up direction - which means that the y coordinate is going 
     // to be decreasing. X will stay the same
 
@@ -160,12 +188,24 @@ export function placeWord(grid: Point[], word: string, direction: Direction): [n
                 break;
 
             case "down":
+                if(checkDirectionDown(grid, word, startingX, startingY)) {
+                    spotFound = true;
+                    placeWordDown(grid, word, startingX, startingY);
+                    foundX = startingX;
+                    foundY = startingY;
+                } else {
+                    pointIndex++;
+                }
+                break;
             case "left":
             case "right":
                 throw new Error("Direction not implemented yet");
         }
     }
-    return [foundX, foundY];
+    // the starting position of the string is returned. Mostly for testing. The 
+    // coordinates for a string going down will actually point to the end of the
+    // string though.
+    return [foundX, foundY]; 
 }
 
 export function gridToString(grid: Point[], size: number): string {
