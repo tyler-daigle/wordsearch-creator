@@ -1,0 +1,54 @@
+name: Got Issues Workflow
+run-name: Running Got Issues Workflow
+on:
+  issues:
+    types:
+      - opened
+      - closed
+
+jobs:
+  add_issue:
+    if: github.event.issue.state == 'open' &&  github.event.issue.author_association == 'OWNER' && contains(github.event.issue.labels.*.name, 'help wanted')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get Languages Used
+        id: languages
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const repo = context.payload.repository.full_name;
+            const response = await github.rest.repos.listLanguages({ owner: context.repo.owner, repo: context.repo.repo });
+            core.setOutput('languages', Object.keys(response.data).join(','));
+      # - name: Show Languages Used
+      #   run: |
+      #     echo "Languages Used: ${{ steps.languages.outputs.languages }}"
+
+      # - name: Checking for Help Wanted label.
+      #   run: |
+      #     echo "Issue has Help Wanted label."
+      #     echo "Adding issue."
+      #     echo "${{github.event.issue.id}}"
+      #     echo "${{github.event.issue.title}}"
+      #     echo "${{github.event.issue.body}}"
+      #     echo "${{github.event.issue.labels}}"
+      #     echo "${{github.event.issue.number}}"
+      #     echo "${{github.event.issue.user.login}}"
+      #     echo "${{github.event.issue.url}}"
+      #     echo "${{github.event.issue.created_at}}"
+
+      - name: Send data to server
+        run: |
+          curl -X POST -H "Content-Type: application/json" -d '{"issueId": "${{github.event.issue.id}}", "issueTitle": "${{github.event.issue.title}}", "issueDescription": "${{github.event.issue.body}}", "issueNumber": "${{github.event.issue.number}}", "difficultyLevel":"Not Set Yet", "dateCreated" : "${{github.event.issue.created_at}}", "issueLink": "${{github.event.issue.html_url}}", "repoLink" : "https://github.com/${{github.repository}}", "repoName": "${{github.repository}}", "techUsed": "${{steps.languages.outputs.languages}}"}' http://159.89.228.48:3000/add-issue
+  close_issue:
+    if: github.event.issue.state == 'closed' && github.event.issue.author_association == 'OWNER' && contains(github.event.issue.labels.*.name, 'help wanted')
+    runs-on: ubuntu-latest
+
+    # send the ID of the issue to the server to mark the issue closed
+
+    steps:
+      - run: |
+          echo "Closing issue."
+          echo "${{github.event.issue.id}}"
+           curl -X POST -H "Content-Type: application/json" -d '{"id": "${{github.event.issue.id}}"}' http://159.89.228.48:3000/close-issue

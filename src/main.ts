@@ -22,6 +22,17 @@
 
 */
 
+// - Choose a random starting position for the word in the grid.
+// - Choose a random direction (horizontal, vertical, or diagonal) for the word.
+// - Check if the word can fit in the chosen direction without overlapping with existing words 
+//   or going out of bounds of the grid.
+// - If the word fits, add it to the grid and move on to the next word. If it doesn't fit, 
+//   choose a new starting position and direction and repeat the process.
+// To speed up the process, you can use a hash table to keep track of the occupied cells in the 
+// grid and check if the new word overlaps with any of the occupied cells before adding it to the 
+// grid. You can also use a trie data structure to quickly check if a partial word can be completed 
+// into a valid word.
+
 export type Direction = "up" | "down" | "left" | "right";
 
 export type Point = {
